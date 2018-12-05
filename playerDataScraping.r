@@ -15,7 +15,7 @@ readTable <- function(url) {
         html_table()
     table <- table[[1]]
     colnames(table) <- c('Rank', 'Battletag', 'Elo', 'Games')
-    table$Battletag <- unlist(strsplit(table$Battletag,split="\\n"))
+    table$Battletag <- unlist(strsplit(table$Battletag,split="\\n"))[[1]]
     table$Rank <-NULL
     table$Elo<-NULL
     table$Games<-NULL
@@ -23,6 +23,11 @@ readTable <- function(url) {
 }
 
 url <- "https://overwatchtracker.com/leaderboards/pc/global"
+
+html <- url %>% read_html() %>% html_nodes(xpath='/html/body/div[1]/div[1]/div[3]/div[2]/div[2]/div[3]/table')
+fileConn<-file("elementHTML.txt")
+writeLines(as.character(html), con=fileConn, sep="")
+close(fileConn)
 
 # Read table on current page
 tables <- list(readTable(url))
