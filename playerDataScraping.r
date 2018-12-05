@@ -6,64 +6,50 @@
 
 library(rvest)
 library(data.table)
-library(XML)
-# Required to load data in table loaded through JS
-library(RSelenium)
 
-#setwd("./")
-system('java -Dwebdriver.chrome.driver=chromedriver.exe -jar selenium-server-standalone-3.9.0.jar', wait=FALSE)
-
-Sys.sleep(1)
-
-url <- "https://overwatchtracker.com/leaderboards/pc/global"
-# adblockPath <- '.\\3.34.0_0'
-
-# Driver
-remDr <- remoteDriver(remoteServerAddr = "localhost"
-                      , port = 4444
-                      , browserName = "chrome"
-                      )
-remDr$open()
-#remDr$getStatus()
-# Go to Fortnite site
-remDr$navigate(url)
-
-
-# Wait
-Sys.sleep(1)
-results <- ''
-tables <- list()
-# Get an element
-for (i in 2:1201) {
-    Sys.sleep(0.3)
-    
-    # webElem<-remDr$findElement(using = "class", value = "card-table-material")
-    # # Get data from table
-    # results <- paste(results, webElem$getElementText(), sep = " ")
-    
-    # webElem <- remDr$findElement("xpath", "/html/body/div[1]/div[1]/div[3]/div[2]/div[2]/div[2]/a[3]")
-    # webElem$clickElement()
-    doc <- htmlParse(remDr$getPageSource()[[1]])
-    tables[i-1] <- readHTMLTable(doc)
-    Sys.sleep(0.5)
-
-    url<-'https://overwatchtracker.com/leaderboards/pc/global/CompetitiveRank?page='
-    url<-paste(c(url,i), sep="")
-    url<-paste(c(url,'&mode=1'), sep="")
-    remDr$navigate(url)
+# Read each page's table
+readTable <- function(url) {
+    table <- url %>%
+        read_html() %>%
+        html_nodes(xpath='/html/body/div[1]/div[1]/div[3]/div[2]/div[2]/div[3]/table') %>%
+        html_table()
+    table <- table[[1]]
+    colnames(table) <- c('Rank', 'Battletag', 'Elo', 'Games')
+    table$Battletag <- unlist(strsplit(table$Battletag,split="\\n"))
+    table$Rank <-NULL
+    table$Elo<-NULL
+    table$Games<-NULL
+    return(table)
 }
 
+url <- "https://overwatchtracker.com/leaderboards/pc/global"
 
-
-
-
+# Read table on current page
+tables <- list(readTable(url))
 # Get an element
-# Click on element (onclick function)
+# To 1200
+for (i in 2:10) {
+    url<-'https://overwatchtracker.com/leaderboards/pc/global/CompetitiveRank?page='
+    url<-paste(url,i, sep="")
+    url<-paste(url,'&mode=1', sep="")
+    print(paste('Visiting', url, sep=" "))
+    tables[i] <- readTable(url)   
+}
 
-remDr$close()
+# Create a list of just names
 
-# Write results to text file so don't have to scrape again
-str(results)
-fileConn<-file("fortniteTableData.txt")
-writeLines(as.character(results), con=fileConn, sep="")
-close(fileConn)
+
+
+
+
+
+# # Get an element
+# # Click on element (onclick function)
+
+# remDr$close()
+
+# # Write results to text file so don't have to scrape again
+# str(results)
+# fileConn<-file("fortniteTableData.txt")
+# writeLines(as.character(results), con=fileConn, sep="")
+# close(fileConn)
