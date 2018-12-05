@@ -6,6 +6,7 @@
 
 library(rvest)
 library(data.table)
+library(gdata)
 
 # Read each page's table
 readTable <- function(url) {
@@ -15,7 +16,10 @@ readTable <- function(url) {
         html_table()
     table <- table[[1]]
     colnames(table) <- c('Rank', 'Battletag', 'Elo', 'Games')
-    table$Battletag <- unlist(strsplit(table$Battletag,split="\\n"))[[1]]
+    table$Battletag<-trim(table$Battletag)
+    table$pos <- regexpr('\\n', table$Battletag)
+    table$Battletag<-substring(table$Battletag, 0,table$pos-2)
+    table$pos <-NULL
     table$Rank <-NULL
     table$Elo<-NULL
     table$Games<-NULL
