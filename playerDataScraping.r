@@ -18,7 +18,7 @@ readTable <- function(url) {
     colnames(table) <- c('Rank', 'Battletag', 'Elo', 'Games')
     table$Battletag<-trim(table$Battletag)
     table$pos <- regexpr('\\n', table$Battletag)
-    table$Battletag<-substring(table$Battletag, 0,table$pos-2)
+    table$Battletag<-substring(table$Battletag, 0,table$pos-1)
     table$pos <-NULL
     table$Rank <-NULL
     table$Elo<-NULL
@@ -28,37 +28,32 @@ readTable <- function(url) {
 
 url <- "https://overwatchtracker.com/leaderboards/pc/global"
 
+# See if reading proper html
 html <- url %>% read_html() %>% html_nodes(xpath='/html/body/div[1]/div[1]/div[3]/div[2]/div[2]/div[3]/table')
 fileConn<-file("elementHTML.txt")
 writeLines(as.character(html), con=fileConn, sep="")
 close(fileConn)
 
 # Read table on current page
-tables <- list(readTable(url))
+battletags <- readTable(url)[,1]
 # Get an element
-# To 1200
-for (i in 2:10) {
+# To 950?
+for (i in 2:950) {
     url<-'https://overwatchtracker.com/leaderboards/pc/global/CompetitiveRank?page='
     url<-paste(url,i, sep="")
     url<-paste(url,'&mode=1', sep="")
     print(paste('Visiting', url, sep=" "))
-    tables[i] <- readTable(url)   
+    table <- readTable(url)[,1]
+    print(str(table))
+    battletags <- append(battletags, table)
 }
 
+write.csv(battletags, 'battletags.csv', row.names=FALSE)
 # Create a list of just names
 
+# Two list - name and value are css classes
+# Variables - names
+# Case - battletag followed by values
 
 
-
-
-
-# # Get an element
-# # Click on element (onclick function)
-
-# remDr$close()
-
-# # Write results to text file so don't have to scrape again
-# str(results)
-# fileConn<-file("fortniteTableData.txt")
-# writeLines(as.character(results), con=fileConn, sep="")
-# close(fileConn)
+#empty nodes = skip
