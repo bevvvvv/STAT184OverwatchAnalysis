@@ -64,11 +64,12 @@ profileData <- fread('battletags.csv')
 profileData$Battletags <- gsub('#','-',profileData$Battletags)
 end<-length(profileData$Battletags)
 i<-1
-while (i < 100) {
+while (i < end) {
     profileData<-addProfile(profileData[i,1], profileData, i)
     if(i%%1000==0) {
         print(str(profileData))
     }
-    i<-i+10
+    i<-i+1
 }
+profileData<-profileData[complete.cases(profileData),]
 fwrite(profileData,'profileData.csv')
