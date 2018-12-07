@@ -14,6 +14,8 @@ Current run options:
 4. --a
     * Default value is true and performs the data analysis including training model and creating graphs.
     * In the future will have separate options for different analysis functions.
+    
+You **must** run install.packages('optparser') if you wish to run with options.
         
 # Findings
 The machine learning model can currently only predict within 400 SR on average. I believe that if I scrape a lot more records this will improve, since I saw an improvement using 8,000 training rows versus 6,500 rows.
