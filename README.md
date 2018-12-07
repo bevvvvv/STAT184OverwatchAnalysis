@@ -17,3 +17,5 @@ Current run options:
         
 # Findings
 The machine learning model can currently only predict within 400 SR on average. I believe that if I scrape a lot more records this will improve, since I saw an improvement using 8,000 training rows versus 6,500 rows.
+
+One of the reasons I only had 10k records was the insanely inefficient scraping that took palce. I hope to find a more efficient method to then scrape everything and run it through the model again.
