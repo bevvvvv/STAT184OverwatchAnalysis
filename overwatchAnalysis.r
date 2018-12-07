@@ -169,11 +169,26 @@ dataAnalysis<-function(){
     # Number of games, in game time, 
     profileData$Games <- profileData$'Damage Done' / profileData$'Damage/Game'
     profileData$GameTimeMin<- profileData$'Damage Done' / profileData$'Damage/Min'
+    # Add group name based off elo range
+    ranks<-c('Bronze','Silver','Gold','Platinum','Diamond','Master','Grandmaster')
+    
+    profileData$Rank[profileData$Rating>0 & profileData$Rating<1000] <- ranks[1]
+    profileData$Rank[profileData$Rating>=1000 & profileData$Rating<2000] <- ranks[2]
+    profileData$Rank[profileData$Rating>=2000 & profileData$Rating<2500] <- ranks[3]
+    profileData$Rank[profileData$Rating>=2500 & profileData$Rating<3000] <- ranks[4]
+    profileData$Rank[profileData$Rating>=3000 & profileData$Rating<3500] <- ranks[5]
+    profileData$Rank[profileData$Rating>=3500 & profileData$Rating<4000] <- ranks[6]
+    profileData$Rank[profileData$Rating>=4000 & profileData$Rating<=5000] <- ranks[7]
+    # Sort ranks in ascending order (written in vector ranks)
+    profileData$Rank <- factor(profileData$Rank, levels = ranks)
 
     # Create histogram of rank distribution
     ratingDistData<- profileData[Rating>0]
-    ggplot(ratingDistData, aes(x=Rating)) + geom_histogram()
+    ggplot(ratingDistData, aes(x=Rating)) + geom_histogram()+ labs(title='Player Skill Distribution',x='Player SR (Skill Rating)',y='Number of players',caption='Distribution of Overwatch player ranks.\n Should be in the shape of a bell curve with common spikes at 3000 and 4000.')
     ggsave('.\\plots\\ratingDistribution.pdf')
+
+    ggplot(ratingDistData, aes(y=GameTimeMin, fill=Rank)) + geom_boxplot() +labs(title='Play time by Rank',x='Player Rank',y='Play time in minutes',caption='This compares the play time of players to their rank. \nPlay time appears correlated to higher ranks.')
+    ggsave('.\\plots\\gameTimeMin.pdf')
 
     # Silver Damage vs Masters Damage
     # Silvers<-ratingDistData[Rating>1000 & Rating<2000]
