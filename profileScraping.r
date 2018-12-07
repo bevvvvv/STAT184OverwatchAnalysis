@@ -69,7 +69,7 @@ while (i < end) {
     if(i%%1000==0) {
         print(str(profileData))
     }
-    i<-i+1
+    i<-i+9
 }
 profileData<-profileData[complete.cases(profileData),]
 fwrite(profileData,'profileData.csv')
