@@ -27,23 +27,20 @@ readTable <- function(url) {
 
 url <- "https://overwatchtracker.com/leaderboards/pc/global"
 
-# See if reading proper html
-# html <- url %>% read_html() %>% html_nodes(xpath='/html/body/div[1]/div[1]/div[3]/div[2]/div[2]/div[3]/table')
-# fileConn<-file("elementHTML.txt")
-# writeLines(as.character(html), con=fileConn, sep="")
-# close(fileConn)
-
 # Read table on current page
 battletags <- readTable(url)[,1]
 # To approximately 950th page
 for (i in 2:950) {
+    # Adjust url to next page
     url<-'https://overwatchtracker.com/leaderboards/pc/global/CompetitiveRank?page='
     url<-paste(url,i, sep="")
     url<-paste(url,'&mode=1', sep="")
     print(paste('Visiting', url, sep=" "))
     table <- readTable(url)[,1]
-    print(str(table))
+    if(i%%100==0) {
+        print(str(table))
+    }
     battletags <- append(battletags, table)
 }
 # Create a list of just names
-write.csv(battletags, 'battletags.csv', row.names=FALSE)
+write.csv(battletags, '.\\data\\battletags.csv', row.names=FALSE)

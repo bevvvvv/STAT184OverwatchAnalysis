@@ -12,6 +12,7 @@ library(data.table)
 
 names <-c('Level','Rating','K/D','KDA','Win Pct','Kills/Game','Elim/Game','Damage/Game','Healing/Game',
             'Elim/Min','Healing/Min','Damage/Min','Solo Kills','Obj kills','Final Blows','Damage Done','Elims','Environment Kills','MultiKills','Deaths')
+# Path to each stat value
 xpathValues<-c('/html/body/div[2]/div[1]/div[3]/div/div[2]/div[1]/div[2]/div/div[2]',
                 '/html/body/div[2]/div[1]/div[3]/div/div[2]/div[2]/div[2]/div/div[2]',
                 '/html/body/div[2]/div[1]/div[3]/div/div[2]/div[3]/div[2]/div[1]/div[2]',
@@ -33,7 +34,7 @@ xpathValues<-c('/html/body/div[2]/div[1]/div[3]/div/div[2]/div[1]/div[2]/div/div
                 '/html/body/div[2]/div[1]/div[3]/div/div[2]/div[6]/div[2]/div[7]/div[2]',
                 '/html/body/div[2]/div[1]/div[3]/div/div[2]/div[7]/div[2]/div[1]/div[2]')
 
-# Function that reads profile, returns default value if no profile found
+# Function that reads profile
 addProfile <- function(battletag, table, rowNum) {
     #url <- 'https://overwatchtracker.com/profile/pc/global/OGE-31607'
     url <- paste('https://overwatchtracker.com/profile/pc/global/',battletag,sep='')
@@ -59,8 +60,10 @@ addProfile <- function(battletag, table, rowNum) {
     
 }
 
-profileData <- fread('battletags.csv')
+# Read battletags in from leaderboards
+profileData <- fread('.\\data\\battletags.csv')
 
+# Change battletag character to use with url param
 profileData$Battletags <- gsub('#','-',profileData$Battletags)
 end<-length(profileData$Battletags)
 i<-1
@@ -71,5 +74,6 @@ while (i < end) {
     }
     i<-i+9
 }
+# Get rid of profiles that do not exist or names were corrupted
 profileData<-profileData[complete.cases(profileData),]
-fwrite(profileData,'profileData.csv')
+fwrite(profileData,'.\\data\\profileData.csv')
