@@ -6,10 +6,13 @@ May 6, 2020
 
 # import modules
 import pandas as pd
-from xgboost import XGBClassifier
+import os
 from sklearn.model_selection import train_test_split
+
+os.getcwd()
+
 # params
-train_data = './data/train_data.csv'
+train_data = './data/profileData.csv'
 sub_path = './data/sepich_submission.csv'
 
 # read data
@@ -20,6 +23,7 @@ train_df = train_df.drop(columns=['category'])
 test_df = pd.read_csv(test_data, sep=',',header=0)
 keys = test_df.key
 
+"""
 # split data
 X_train, X_valid, y_train, y_valid = train_test_split(train_df, train_cats, test_size=0.2)
 
@@ -50,4 +54,4 @@ pred_df = pred_df.rename(columns={0: 'group_01', 1: 'group_02', 2: 'group_03', 3
 
 # write prediction to file
 pred_df.to_csv(sub_path, index=False)
-
+"""
